@@ -1,6 +1,6 @@
 'use strict';
 
-juke.controller('AlbumCtrl',function ($scope, $http, $rootScope, $log, StatsFactory, HttpRequests) {
+juke.controller('AlbumCtrl',function ($scope, $http, $rootScope, $log, StatsFactory, HttpRequests, PlayerFactory) {
 
   HttpRequests.fetchAll()
   .then(function (albums) {
@@ -23,11 +23,19 @@ juke.controller('AlbumCtrl',function ($scope, $http, $rootScope, $log, StatsFact
 
   // main toggle
   $scope.toggle = function (song) {
-    if ($scope.playing && song === $scope.currentSong) {
-      $rootScope.$broadcast('pause');
-    } else $rootScope.$broadcast('play', song);
+    if (PlayerFactory.isPlaying() && song === PlayerFactory.getCurrentSong()) {
+      PlayerFactory.pause();
+    } else PlayerFactory.start(song);
   };
 
+  $scope.playing = function () {
+    return PlayerFactory.isPlaying();
+  }
+
+  $scope.currentSong = function () {
+    return PlayerFactory.getCurrentSong();
+  }
+/*
   // incoming events (from Player, toggle, or skip)
   $scope.$on('pause', pause);
   $scope.$on('play', play);
@@ -56,7 +64,7 @@ juke.controller('AlbumCtrl',function ($scope, $http, $rootScope, $log, StatsFact
   };
   function next () { skip(1); };
   function prev () { skip(-1); };
-
+*/
 });
 
 
