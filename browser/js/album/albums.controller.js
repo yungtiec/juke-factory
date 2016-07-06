@@ -16,6 +16,15 @@ juke.controller('AlbumsCtrl',function ($scope, $http, $rootScope, $log, HttpRequ
       $scope.albums = albums;
 
     });
+
+    $scope.$on('viewSwap', function (event, data) {
+      $scope.showMe = (data.name === 'allAlbums');
+    });
+
+    $scope.viewOneAlbum = function (id) {
+      $rootScope.$broadcast('viewSwap', { name: 'oneAlbum', id: id });
+    }
+
 });
 
 
