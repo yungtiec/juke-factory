@@ -25,16 +25,16 @@ juke.controller('AlbumCtrl',function ($scope, $http, $rootScope, $log, StatsFact
   $scope.toggle = function (song) {
     if (PlayerFactory.isPlaying() && song === PlayerFactory.getCurrentSong()) {
       PlayerFactory.pause();
-    } else PlayerFactory.start(song);
+    } else PlayerFactory.start(song, $scope.album.songs);
   };
 
   $scope.playing = function () {
     return PlayerFactory.isPlaying();
-  }
+  };
 
   $scope.currentSong = function () {
     return PlayerFactory.getCurrentSong();
-  }
+  };
 /*
   // incoming events (from Player, toggle, or skip)
   $scope.$on('pause', pause);
