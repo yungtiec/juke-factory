@@ -1,6 +1,6 @@
 'use strict';
 
-juke.controller('AlbumCtrl',function ($scope, $http, $rootScope, $log, StatsFactory, HttpRequests, PlayerFactory) {
+juke.controller('AlbumCtrl',function ($scope, $http, $rootScope, $log, StatsFactory, HttpRequests, PlayerFactory, SongFactory) {
 
   // main toggle
   $scope.toggle = function (song) {
@@ -23,10 +23,7 @@ juke.controller('AlbumCtrl',function ($scope, $http, $rootScope, $log, StatsFact
       HttpRequests.fetchById(data.id)
       .then(function (album) {
         album.imageUrl = '/api/albums/' + album.id + '/image';
-        album.songs.forEach(function (song, i) {
-          song.audioUrl = '/api/songs/' + song.id + '/audio';
-          song.albumIndex = i;
-        });
+        album.songs.forEach(SongFactory.addAlbumInfo);
         $scope.album = album;
         StatsFactory.totalTime(album)
         .then(function (albumDuration) {

@@ -1,6 +1,6 @@
 'use strict';
 
-juke.controller('ArtistCtrl',function ($scope, $http, $rootScope, $log, StatsFactory, ArtistFactory) {
+juke.controller('ArtistCtrl',function ($scope, $http, $rootScope, $log, StatsFactory, ArtistFactory, PlayerFactory, SongFactory) {
 
   $scope.$on('viewSwap', function (event, data) {
     $scope.showMe = (data.name === 'oneArtist');
@@ -11,10 +11,7 @@ juke.controller('ArtistCtrl',function ($scope, $http, $rootScope, $log, StatsFac
         return ArtistFactory.fetchAllSongs(artist.id);
       })
       .then(function (songs) {
-        songs.forEach(function (song, i) {
-          song.audioUrl = '/api/songs/' + song.id + '/audio';
-          song.artistIndex = i;
-        });
+        songs.forEach(SongFactory.addArtistInfo);
         $scope.artist.songs = songs;
         return ArtistFactory.fetchAllAlbums($scope.artist.id)
       })
@@ -27,5 +24,32 @@ juke.controller('ArtistCtrl',function ($scope, $http, $rootScope, $log, StatsFac
       .catch($log.error);
     }
   });
+
+  $scope.playing = function () {
+    return PlayerFactory.isPlaying();
+  }
+
+  $scope.currentSong = function () {
+    return PlayerFactory.getCurrentSong();
+  }
+
+  $scope.toggle = function (song) {
+    if (PlayerFactory.isPlaying() && song === PlayerFactory.getCurrentSong()) {
+      PlayerFactory.pause();
+    } else PlayerFactory.start(song, $scope.artist.songs);
+  };
+
+  $scope.playing = function () {
+    return PlayerFactory.isPlaying();
+  };
+
+  $scope.currentSong = function () {
+    return PlayerFactory.getCurrentSong();
+  };
+
+  $scope.viewOneAlbum = function (id) {
+    $rootScope.$broadcast('viewSwap', { name: 'oneAlbum', id: id });
+  }
+
 
 });
