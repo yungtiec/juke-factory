@@ -19,23 +19,24 @@ juke.controller('AlbumCtrl',function ($scope, $http, $rootScope, $log, StatsFact
 
   $scope.$on('viewSwap', function (event, data) {
     $scope.showMe = (data.name === 'oneAlbum');
+    if ($scope.showMe) {
+      HttpRequests.fetchById(data.id)
+      .then(function (album) {
+        album.imageUrl = '/api/albums/' + album.id + '/image';
+        album.songs.forEach(function (song, i) {
+          song.audioUrl = '/api/songs/' + song.id + '/audio';
+          song.albumIndex = i;
+        });
+        $scope.album = album;
+        StatsFactory.totalTime(album)
+        .then(function (albumDuration) {
+            $scope.fullDuration = StatsFactory.toHHMMSS(albumDuration);
+        });
 
-   HttpRequests.fetchById(data.id)
-    .then(function (album) {
-      album.imageUrl = '/api/albums/' + album.id + '/image';
-      album.songs.forEach(function (song, i) {
-        song.audioUrl = '/api/songs/' + song.id + '/audio';
-        song.albumIndex = i;
-      });
-      $scope.album = album;
-      StatsFactory.totalTime(album)
-      .then(function (albumDuration) {
-          $scope.fullDuration = StatsFactory.toHHMMSS(albumDuration);
-      });
-
-    })
-    .catch($log.error);
-    });
+      })
+      .catch($log.error);
+    }
+  });
 
 });
 
